@@ -1,0 +1,16 @@
+name: Repository Health
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Repo Health Check
+        uses: RahilAlam929/repo-health-action@main
