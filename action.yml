@@ -2,6 +2,10 @@ name: Repo Health Check
 description: Check the basic health of a GitHub repository
 author: Rahil Alam
 
+branding:
+  icon: activity
+  color: blue
+
 inputs:
   min-files:
     description: Minimum number of files expected in the repository
