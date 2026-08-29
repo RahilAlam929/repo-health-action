@@ -1,0 +1,65 @@
+name: Repo Health Check
+description: Check the basic health of a GitHub repository
+author: Rahil Alam
+
+inputs:
+  min-files:
+    description: Minimum number of files expected in the repository
+    required: false
+    default: "3"
+
+outputs:
+  health-score:
+    description: Repository health score out of 100
+
+runs:
+  using: composite
+  steps:
+    - name: Run repository health check
+      shell: bash
+      run: |
+        echo "🔍 Checking repository health..."
+        echo ""
+
+        score=0
+
+        if [ -f README.md ]; then
+          echo "✅ README.md found"
+          score=$((score + 25))
+        else
+          echo "❌ README.md missing"
+        fi
+
+        if [ -f LICENSE ] || [ -f LICENSE.md ]; then
+          echo "✅ LICENSE found"
+          score=$((score + 25))
+        else
+          echo "⚠️ LICENSE missing"
+        fi
+
+        if [ -d .github/workflows ]; then
+          echo "✅ GitHub Actions workflow found"
+          score=$((score + 25))
+        else
+          echo "⚠️ GitHub Actions workflow missing"
+        fi
+
+        file_count=$(find . -type f \
+          -not -path './.git/*' \
+          | wc -l | tr -d ' ')
+
+        echo "📁 Files found: $file_count"
+
+        if [ "$file_count" -ge "${{ inputs.min-files }}" ]; then
+          echo "✅ Repository has enough files"
+          score=$((score + 25))
+        else
+          echo "⚠️ Repository has fewer files than expected"
+        fi
+
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "🏥 Repository Health Score: $score/100"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+        echo "health-score=$score" >> "$GITHUB_OUTPUT"
