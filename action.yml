@@ -11,11 +11,17 @@ inputs:
 outputs:
   health-score:
     description: Repository health score out of 100
+    value: ${{ steps.health-check.outputs.health-score }}
+
+  grade:
+    description: Repository health grade
+    value: ${{ steps.health-check.outputs.grade }}
 
 runs:
   using: composite
   steps:
     - name: Run repository health check
+      id: health-check
       shell: bash
       run: |
         echo "🔍 Checking repository health..."
@@ -57,9 +63,23 @@ runs:
           echo "⚠️ Repository has fewer files than expected"
         fi
 
+        if [ "$score" -ge 90 ]; then
+          grade="A+"
+        elif [ "$score" -ge 80 ]; then
+          grade="A"
+        elif [ "$score" -ge 70 ]; then
+          grade="B"
+        elif [ "$score" -ge 60 ]; then
+          grade="C"
+        else
+          grade="D"
+        fi
+
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "🏥 Repository Health Score: $score/100"
+        echo "🏥 Repository Health: $score/100"
+        echo "🎓 Grade: $grade"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
         echo "health-score=$score" >> "$GITHUB_OUTPUT"
+        echo "grade=$grade" >> "$GITHUB_OUTPUT"
