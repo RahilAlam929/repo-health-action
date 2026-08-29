@@ -12,6 +12,11 @@ inputs:
     required: false
     default: "3"
 
+  min-score:
+    description: Minimum health score required for the check to pass
+    required: false
+    default: "0"
+
 outputs:
   health-score:
     description: Repository health score out of 100
@@ -87,3 +92,14 @@ runs:
 
         echo "health-score=$score" >> "$GITHUB_OUTPUT"
         echo "grade=$grade" >> "$GITHUB_OUTPUT"
+
+        min_score="${{ inputs.min-score }}"
+
+        if [ "$score" -lt "$min_score" ]; then
+          echo ""
+          echo "❌ Repository health score ($score) is below the required minimum ($min_score)."
+          exit 1
+        fi
+
+        echo ""
+        echo "✅ Repository passed the minimum health score requirement."
