@@ -1,31 +1,48 @@
-# 🏥 Repo Health Check
+# 🏥 Repo Health Action
 
-A simple reusable GitHub Action that checks the basic health of a repository.
+[![GitHub Marketplace](https://img.shields.io/badge/GitHub-Action-blue?logo=github)](https://github.com/RahilAlam929/repo-health-action)
+[![Release](https://img.shields.io/github/v/release/RahilAlam929/repo-health-action)](https://github.com/RahilAlam929/repo-health-action/releases)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-## ✨ Checks
+A lightweight, reusable GitHub Action that checks the basic health of a repository and generates a **health score + grade**.
 
-- ✅ README.md
-- ✅ LICENSE
-- ✅ GitHub Actions workflow
-- ✅ Minimum number of files
-- 📊 Health score out of 100
+## ✨ What it checks
+
+| Check | Points |
+|---|---:|
+| 📄 README | 25 |
+| ⚖️ LICENSE | 25 |
+| ⚙️ GitHub Actions | 25 |
+| 📁 Minimum files | 25 |
+| **Total** | **100** |
 
 ## 🚀 Usage
 
+Add this to your workflow:
+
 ```yaml
-name: Repository Health
+name: Repo Health
 
 on:
   push:
   pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   health:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Repo Health Check
+        id: health
         uses: RahilAlam929/repo-health-action@v1
+
+      - name: Show Result
+        run: |
+          echo "Health Score: ${{ steps.health.outputs.health-score }}/100"
+          echo "Grade: ${{ steps.health.outputs.grade }}"
